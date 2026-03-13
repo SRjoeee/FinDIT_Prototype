@@ -5,10 +5,11 @@ import { VideoGrid } from './components/VideoGrid';
 import { AudioGrid } from './components/AudioGrid';
 import { MOCK_DIRECTORIES, MOCK_VIDEOS, MOCK_AUDIO_DIRECTORIES, MOCK_AUDIOS, TAG_COLORS } from './constants';
 import { Directory, VideoAsset, AudioAsset } from './types';
-import { SlidersHorizontal, Settings, UploadCloud, AlertTriangle } from 'lucide-react';
+import { SlidersHorizontal, Settings, UploadCloud, AlertTriangle, PanelLeft, Play } from 'lucide-react';
 import { WindowControls } from './components/WindowControls';
 import { VideoPlayerModal } from './components/VideoPlayerModal';
 import { AudioPlayerModal } from './components/AudioPlayerModal';
+import { GlobalProgressRing, BackgroundTasksPopover } from './components/BackgroundTasksPopover';
 
 const App: React.FC = () => {
   const [searchMode, setSearchMode] = useState<'video' | 'audio'>('video');
@@ -22,7 +23,8 @@ const App: React.FC = () => {
   const [assetTags, setAssetTags] = useState<Record<string, string[]>>({});
   const [starredIds, setStarredIds] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
-  
+  const [showGlobalProgress, setShowGlobalProgress] = useState(false);
+
   const showToast = (msg: string) => {
       setToast(msg);
       setTimeout(() => setToast(null), 3000);
@@ -289,6 +291,31 @@ const App: React.FC = () => {
         <WindowControls />
       </div>
 
+      {/* Unified Global Top Controls (Stationary) */}
+      <div 
+          className="absolute top-0 left-[80px] h-14 flex items-center justify-start z-[100]"
+      >
+          <div className="flex items-center gap-1">
+              <button 
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  className={`w-7 h-7 flex flex-shrink-0 items-center justify-center rounded-md transition-colors ${isSidebarOpen ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                  title="Toggle Sidebar"
+              >
+                  <PanelLeft size={16} />
+              </button>
+              
+              <div className="relative group flex flex-shrink-0 items-center justify-center" onMouseEnter={() => setShowGlobalProgress(true)} onMouseLeave={() => setShowGlobalProgress(false)}>
+                  <button 
+                      className="w-7 h-7 flex items-center justify-center rounded-md bg-transparent text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                      title="Global Progress"
+                  >
+                      <GlobalProgressRing />
+                  </button>
+                  {showGlobalProgress && <BackgroundTasksPopover />}
+              </div>
+          </div>
+      </div>
+
       <Sidebar 
         directories={directories} 
         activeId={activeFolderId} 
@@ -306,8 +333,8 @@ const App: React.FC = () => {
         <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-[#111] to-transparent pointer-events-none" />
         
         {/* Header */}
-        <header className={`flex-shrink-0 px-8 h-14 flex items-center justify-between gap-4 z-10 transition-all duration-300 ${!isSidebarOpen ? 'pl-32' : ''}`}>
-            <div className="flex items-center gap-3 flex-1 min-w-0">
+        <header className={`flex-shrink-0 px-8 h-14 flex items-center justify-between gap-4 z-10 transition-all duration-300 ${!isSidebarOpen ? 'pl-[160px]' : ''}`}>
+            <div className="flex items-center gap-3 flex-1 min-w-0">                
                 <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-300 min-w-0 gap-0.5">
                     <h1 className="text-base font-bold text-gray-100 truncate leading-none">
                         {activeFolderId?.startsWith('smart') 

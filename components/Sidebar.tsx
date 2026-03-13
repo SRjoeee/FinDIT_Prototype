@@ -216,9 +216,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
       
       {/* Sidebar Content - Slides in/out */}
       <div className={`absolute top-0 left-0 h-full w-[260px] flex flex-col bg-[#111] border-r border-white/5 select-none transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="h-12 flex-shrink-0" /> {/* Spacer for window controls */}
         
-        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-8 custom-scrollbar">
+        <div className="h-12 flex-shrink-0" /> {/* Spacer for window controls and absolute toggles */}
+        
+        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-8 custom-scrollbar mt-2">
           
           {/* Section: Library (Smart) */}
           <div>
@@ -334,15 +335,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
           <UserSettings />
         </div>
       </div>
-
-      {/* Toggle Button - Floats outside the sliding container */}
-      <button 
-          onClick={onToggleSidebar}
-          className={`absolute top-2 z-50 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all duration-300 ${isOpen ? 'left-[212px]' : 'left-[80px]'}`}
-          title="Toggle Sidebar"
-      >
-          <PanelLeft size={18} />
-      </button>
     </div>
   );
 };
