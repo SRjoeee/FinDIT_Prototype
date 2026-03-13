@@ -30,20 +30,20 @@ export const AudioGrid: React.FC<AudioGridProps> = ({ audios, selectedIds, asset
             }}
             className={`
               group relative flex items-center gap-5 border rounded-2xl p-4 transition-all duration-200 cursor-pointer
-              ${selectedIds.has(audio.id) ? 'bg-blue-500/20 border-blue-500/50 ring-1 ring-blue-500/50' : 'bg-[#111] border-white/5 hover:bg-[#1A1A1A] hover:border-white/10'}
+              ${selectedIds.has(audio.id) ? 'bg-blue-500/20 border-blue-500/50 ring-1 ring-blue-500/50' : 'bg-white dark:bg-[#111] border-black/5 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-[#1A1A1A] hover:border-black/10 dark:hover:border-white/10'}
             `}
           >
             {/* Play Button */}
-            <button className="w-10 h-10 flex-shrink-0 rounded-full bg-white/5 hover:bg-blue-500 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
+            <button className="w-10 h-10 flex-shrink-0 rounded-full bg-black/5 dark:bg-white/5 hover:bg-blue-500 text-slate-500 dark:text-gray-400 hover:text-white flex items-center justify-center transition-colors">
                 <Play size={16} className="ml-0.5" />
             </button>
 
             {/* Info */}
             <div className="flex flex-col min-w-[200px] flex-shrink-0">
-                <h3 className="text-sm font-medium text-gray-200 truncate" title={audio.title}>
+                <h3 className="text-sm font-medium text-slate-900 dark:text-gray-200 truncate" title={audio.title}>
                     {audio.title}
                 </h3>
-                <div className="flex items-center gap-3 text-[10px] text-gray-500 mt-1.5">
+                <div className="flex items-center gap-3 text-[10px] text-slate-500 dark:text-gray-500 mt-1.5">
                     <span className="flex items-center gap-1.5">
                         <Clock size={12} />
                         {audio.duration}
@@ -73,12 +73,12 @@ export const AudioGrid: React.FC<AudioGridProps> = ({ audios, selectedIds, asset
             {/* Tags */}
             <div className="hidden md:flex flex-wrap gap-2 min-w-[150px] justify-end">
                 {audio.tags.slice(0, 2).map(tag => (
-                    <span key={tag} className="px-3 py-1 rounded-full bg-white/5 text-[10px] text-gray-400 border border-white/5">
+                    <span key={tag} className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 text-[10px] text-slate-500 dark:text-gray-400 border border-black/5 dark:border-white/5">
                         {tag}
                     </span>
                 ))}
                 {audio.tags.length > 2 && (
-                    <span className="px-3 py-1 rounded-full bg-white/5 text-[10px] text-gray-500 border border-white/5">
+                    <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 text-[10px] text-slate-400 dark:text-gray-500 border border-black/5 dark:border-white/5">
                         +{audio.tags.length - 2}
                     </span>
                 )}
@@ -98,7 +98,7 @@ export const AudioGrid: React.FC<AudioGridProps> = ({ audios, selectedIds, asset
                             return (
                                 <div 
                                     key={tagId} 
-                                    className={`w-3 h-3 rounded-full ${tagColor} ring-2 ring-[#111] group-hover:ring-[#1A1A1A] shadow-sm transition-all`} 
+                                    className={`w-3 h-3 rounded-full ${tagColor} ring-2 ring-white dark:ring-[#111] group-hover:ring-slate-50 dark:group-hover:ring-[#1A1A1A] shadow-sm transition-all`} 
                                 />
                             );
                         })}

@@ -22,12 +22,12 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, selectedIds, asset
 
   if (videos.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center text-gray-500 h-full">
-        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4 border border-white/5">
+      <div className="flex-1 flex flex-col items-center justify-center text-slate-400 dark:text-gray-500 h-full">
+        <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center mb-4 border border-black/5 dark:border-white/5">
             <FileType className="w-8 h-8 opacity-40" />
         </div>
-        <p className="text-sm font-medium text-gray-400">No media found</p>
-        <p className="text-xs text-gray-600 mt-1">This folder is empty or hasn't been indexed yet.</p>
+        <p className="text-sm font-medium text-slate-500 dark:text-gray-400">No media found</p>
+        <p className="text-xs text-slate-400 dark:text-gray-600 mt-1">This folder is empty or hasn't been indexed yet.</p>
       </div>
     );
   }
@@ -51,11 +51,11 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, selectedIds, asset
             }}
             className={`
                 group relative flex flex-col gap-2 cursor-pointer p-2 -m-2 rounded-xl transition-all
-                ${selectedIds.has(video.id) ? 'bg-blue-500/20 ring-1 ring-blue-500/50' : 'hover:bg-white/5'}
+                ${selectedIds.has(video.id) ? 'bg-blue-500/20 ring-1 ring-blue-500/50' : 'hover:bg-black/5 dark:hover:bg-white/5'}
             `}
           >
             {/* Thumbnail Container */}
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-[#1A1A1A] shadow-lg border border-white/5 transition-all duration-300 group-hover:border-white/20 group-hover:shadow-xl">
+            <div className="relative aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-[#1A1A1A] shadow-lg border border-black/5 dark:border-white/5 transition-all duration-300 group-hover:border-black/10 dark:group-hover:border-white/20 group-hover:shadow-xl">
               <img 
                 src={video.thumbnail} 
                 alt={video.title}
@@ -128,10 +128,10 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, selectedIds, asset
 
             {/* Metadata */}
             <div className="flex flex-col px-0.5 gap-1 mt-1">
-              <h4 className={`text-xs font-medium truncate transition-colors ${selectedIds.has(video.id) ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+              <h4 className={`text-xs font-medium truncate transition-colors ${selectedIds.has(video.id) ? 'text-slate-950 dark:text-white' : 'text-slate-800 dark:text-gray-300 group-hover:text-slate-950 dark:group-hover:text-white'}`}>
                   {video.title}
               </h4>
-              <div className="flex items-center justify-between text-[10px] text-gray-600">
+              <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-gray-600 font-medium">
                   <span className="uppercase">{video.resolution}</span>
                   <span>{video.dateAdded}</span>
               </div>

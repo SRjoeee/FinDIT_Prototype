@@ -286,7 +286,7 @@ const App: React.FC = () => {
   }, [activeFolderId, searchQuery, directories, connectedFolderIds, starredIds, assetTags]);
 
   return (
-    <div className="flex h-screen w-full bg-[#050505] text-white overflow-hidden font-sans selection:bg-blue-500/30 relative">
+    <div className="flex h-screen w-full bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-white overflow-hidden font-sans selection:bg-blue-500/30 relative transition-colors duration-300">
       <div className="absolute top-0 left-0 z-50">
         <WindowControls />
       </div>
@@ -298,7 +298,7 @@ const App: React.FC = () => {
           <div className="flex items-center gap-1">
               <button 
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  className={`w-7 h-7 flex flex-shrink-0 items-center justify-center rounded-md transition-colors ${isSidebarOpen ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                  className={`w-7 h-7 flex flex-shrink-0 items-center justify-center rounded-md transition-colors ${isSidebarOpen ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10'}`}
                   title="Toggle Sidebar"
               >
                   <PanelLeft size={16} />
@@ -306,7 +306,7 @@ const App: React.FC = () => {
               
               <div className="relative group flex flex-shrink-0 items-center justify-center" onMouseEnter={() => setShowGlobalProgress(true)} onMouseLeave={() => setShowGlobalProgress(false)}>
                   <button 
-                      className="w-7 h-7 flex items-center justify-center rounded-md bg-transparent text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                      className="w-7 h-7 flex items-center justify-center rounded-md bg-transparent text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                       title="Global Progress"
                   >
                       <GlobalProgressRing />
@@ -330,20 +330,20 @@ const App: React.FC = () => {
       
       <main className="flex-1 flex flex-col min-w-0 relative" onClick={() => setSelectedIds(new Set())}>
         {/* Subtle Ambient Background for Active View */}
-        <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-[#111] to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-slate-200/50 dark:from-[#111] to-transparent pointer-events-none transition-colors duration-300" />
         
         {/* Header */}
         <header className={`flex-shrink-0 px-8 h-14 flex items-center justify-between gap-4 z-10 transition-all duration-300 ${!isSidebarOpen ? 'pl-[160px]' : ''}`}>
             <div className="flex items-center gap-3 flex-1 min-w-0">                
                 <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-300 min-w-0 gap-0.5">
-                    <h1 className="text-base font-bold text-gray-100 truncate leading-none">
+                    <h1 className="text-base font-bold text-slate-900 dark:text-gray-100 truncate leading-none">
                         {activeFolderId?.startsWith('smart') 
                             ? directories.find(d => d.id === activeFolderId)?.name 
                             : activeFolderId?.startsWith('tag-')
                             ? TAG_COLORS.find(t => t.id === activeFolderId.replace('tag-', ''))?.name
                             : directories.find(d => d.id === activeFolderId || d.children?.some(c => c.id === activeFolderId))?.name || 'Library'}
                     </h1>
-                    <span className="text-xs text-gray-500 font-medium truncate leading-none">
+                    <span className="text-xs text-slate-500 dark:text-gray-500 font-medium truncate leading-none">
                         {searchMode === 'video' ? filteredVideos.length : filteredAudios.length} Items
                     </span>
                 </div>
@@ -354,13 +354,13 @@ const App: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-end gap-1.5 flex-1">
-                 <button className="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-white hover:bg-white/10 transition-colors" title="Filter">
+                 <button className="w-7 h-7 flex items-center justify-center rounded-md text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="Filter">
                     <ListFilter size={16} />
                  </button>
-                 <button className="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-white hover:bg-white/10 transition-colors" title="More">
+                 <button className="w-7 h-7 flex items-center justify-center rounded-md text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="More">
                     <MoreHorizontal size={16} />
                  </button>
-                 <button className="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-white hover:bg-white/10 transition-colors" title="Info">
+                 <button className="w-7 h-7 flex items-center justify-center rounded-md text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="Info">
                     <Info size={16} />
                  </button>
             </div>
@@ -393,7 +393,7 @@ const App: React.FC = () => {
 
         {/* Toast Notification */}
         {toast && (
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[#1A1A1A]/90 backdrop-blur-md border border-white/10 text-white px-5 py-2.5 rounded-full shadow-2xl z-50 text-xs font-medium flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/90 dark:bg-[#1A1A1A]/90 backdrop-blur-md border border-black/5 dark:border-white/10 text-slate-900 dark:text-white px-5 py-2.5 rounded-full shadow-2xl z-50 text-xs font-medium flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 transition-colors duration-300">
                 <Play size={14} className="text-blue-400" fill="currentColor" />
                 {toast}
             </div>

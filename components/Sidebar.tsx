@@ -43,7 +43,7 @@ const IndexingRing: React.FC<{ progress: number }> = ({ progress }) => {
     <div className="relative w-4 h-4 flex items-center justify-center">
       <svg className="transform -rotate-90 w-full h-full">
         <circle
-          className="text-gray-700"
+          className="text-black/10 dark:text-gray-700"
           strokeWidth="2"
           stroke="currentColor"
           fill="transparent"
@@ -100,7 +100,7 @@ const DirectoryItem: React.FC<{
       <div 
         className={`
           group relative flex items-center justify-between py-1.5 px-2 rounded-lg text-sm cursor-pointer transition-all duration-200
-          ${isActive ? 'bg-white/10 text-white font-medium shadow-sm backdrop-blur-sm' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'}
+          ${isActive ? 'bg-black/5 dark:bg-white/10 text-slate-900 dark:text-white font-medium shadow-sm backdrop-blur-sm' : 'text-slate-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-gray-200'}
           ${isOffline ? 'opacity-60 grayscale' : ''}
         `}
         style={{ paddingLeft: `${depth * 16 + 12}px` }}
@@ -149,8 +149,8 @@ const DirectoryItem: React.FC<{
                         onToggleConnection(dir.id);
                     }}
                     className={`
-                        p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/20
-                        ${!dir.isConnected ? 'text-green-500' : 'text-red-400'}
+                        p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/10 dark:hover:bg-white/20
+                        ${!dir.isConnected ? 'text-green-600 dark:text-green-500' : 'text-red-500 dark:text-red-400'}
                     `}
                     title={dir.isConnected ? "Simulate Unplug" : "Simulate Connect"}
                 >
@@ -171,7 +171,7 @@ const DirectoryItem: React.FC<{
                 ) : (
                     /* Case: Item Count (Only if connected and not indexing) */
                     dir.itemCount !== undefined && (
-                        <span className={`text-[10px] ${isActive ? 'text-white/60' : 'text-gray-600 group-hover:text-gray-500'}`}>
+                        <span className={`text-[10px] ${isActive ? 'text-slate-900/60 dark:text-white/60' : 'text-slate-400 dark:text-gray-600 group-hover:text-slate-500 dark:group-hover:text-gray-500'}`}>
                             {dir.itemCount}
                         </span>
                     )
@@ -184,7 +184,7 @@ const DirectoryItem: React.FC<{
       {hasChildren && expanded && (
         <div className="flex flex-col relative">
            {/* Tree guideline */}
-           <div className="absolute top-0 bottom-0 w-px bg-white/5" style={{ left: `${depth * 16 + 20}px` }} />
+           <div className="absolute top-0 bottom-0 w-px bg-black/5 dark:bg-white/5" style={{ left: `${depth * 16 + 20}px` }} />
            
           {dir.children?.map(child => (
             <DirectoryItem 
@@ -215,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
     <div className={`relative h-full transition-all duration-300 ease-in-out flex-shrink-0 ${isOpen ? 'w-[260px]' : 'w-0'}`}>
       
       {/* Sidebar Content - Slides in/out */}
-      <div className={`absolute top-0 left-0 h-full w-[260px] flex flex-col bg-[#111] border-r border-white/5 select-none transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`absolute top-0 left-0 h-full w-[260px] flex flex-col bg-slate-50 dark:bg-[#111] border-r border-black/5 dark:border-white/5 select-none transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         
         <div className="h-12 flex-shrink-0" /> {/* Spacer for window controls and absolute toggles */}
         
@@ -225,22 +225,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
           <div>
               <div className="flex items-center justify-between px-2 mb-3">
                   {/* Segmented Control for Search Mode */}
-                  <div className="flex bg-white/5 rounded-full p-0.5 w-full relative">
+                  <div className="flex bg-black/5 dark:bg-white/5 rounded-full p-0.5 w-full relative">
                       {/* Animated Background Pill */}
                       <div 
-                          className="absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-white/10 rounded-full shadow-sm transition-transform duration-300 ease-in-out"
+                          className="absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-white dark:bg-white/10 rounded-full shadow-sm transition-transform duration-300 ease-in-out"
                           style={{ transform: searchMode === 'video' ? 'translateX(0)' : 'translateX(100%)' }}
                       />
                       
                       <button
                           onClick={() => onSearchModeChange('video')}
-                          className={`flex-1 py-1 text-xs font-medium rounded-full z-10 transition-colors duration-200 ${searchMode === 'video' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+                          className={`flex-1 py-1 text-xs font-medium rounded-full z-10 transition-colors duration-200 ${searchMode === 'video' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-300'}`}
                       >
                           Video
                       </button>
                       <button
                           onClick={() => onSearchModeChange('audio')}
-                          className={`flex-1 py-1 text-xs font-medium rounded-full z-10 transition-colors duration-200 ${searchMode === 'audio' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+                          className={`flex-1 py-1 text-xs font-medium rounded-full z-10 transition-colors duration-200 ${searchMode === 'audio' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-300'}`}
                       >
                           Audio
                       </button>
@@ -318,8 +318,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
                           key={tag.id}
                           onClick={() => onSelect(`tag-${tag.id}`)}
                           className={`
-                              group relative flex items-center gap-2 py-1.5 px-2 rounded-lg text-sm cursor-pointer transition-all duration-200
-                              ${activeId === `tag-${tag.id}` ? 'bg-white/10 text-white font-medium shadow-sm backdrop-blur-sm' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'}
+                               group relative flex items-center gap-2 py-1.5 px-2 rounded-lg text-sm cursor-pointer transition-all duration-200
+                              ${activeId === `tag-${tag.id}` ? 'bg-black/5 dark:bg-white/10 text-slate-800 dark:text-white font-medium shadow-sm backdrop-blur-sm' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-gray-200'}
                           `}
                       >
                           <div className={`w-3 h-3 rounded-full ${tag.color} shadow-sm`} />
@@ -331,7 +331,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
         </div>
 
         {/* Footer: User Settings */}
-        <div className="p-4 border-t border-white/5 bg-[#0A0A0A]">
+        <div className="p-4 border-t border-black/5 dark:border-white/5 bg-slate-100 dark:bg-[#0A0A0A] transition-colors duration-300">
           <UserSettings />
         </div>
       </div>
