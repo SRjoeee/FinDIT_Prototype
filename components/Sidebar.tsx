@@ -11,8 +11,8 @@ import {
   ChevronDown,
   Laptop,
   AlertCircle,
-  Unplug,
   Database,
+  ArrowUpFromLine,
   PanelLeft,
   Star
 } from 'lucide-react';
@@ -152,9 +152,9 @@ const DirectoryItem: React.FC<{
                         p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/10 dark:hover:bg-white/20
                         ${!dir.isConnected ? 'text-green-600 dark:text-green-500' : 'text-red-500 dark:text-red-400'}
                     `}
-                    title={dir.isConnected ? "Simulate Unplug" : "Simulate Connect"}
+                    title={dir.isConnected ? "推出" : "Simulate Connect"}
                 >
-                    {dir.isConnected ? <Unplug size={12} /> : <Database size={12} />}
+                    {dir.isConnected ? <ArrowUpFromLine size={12} /> : <Database size={12} />}
                 </button>
             )}
 
@@ -215,11 +215,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
     <div className={`relative h-full transition-all duration-300 ease-in-out flex-shrink-0 ${isOpen ? 'w-[260px]' : 'w-0'}`}>
       
       {/* Sidebar Content - Slides in/out */}
-      <div className={`absolute top-0 left-0 h-full w-[260px] flex flex-col bg-slate-50 dark:bg-[#111] border-r border-black/5 dark:border-white/5 select-none transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`absolute top-0 left-0 h-full w-[260px] flex flex-col bg-white/60 dark:bg-black/40 backdrop-blur-xl border-r border-black/5 dark:border-white/5 select-none transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         
         <div className="h-12 flex-shrink-0" /> {/* Spacer for window controls and absolute toggles */}
         
-        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-8 custom-scrollbar mt-2">
+        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-5 mt-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           
           {/* Section: Library (Smart) */}
           <div>
@@ -261,8 +261,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
 
           {/* Section: Sources (Physical) */}
           <div>
-               <div className="flex items-center justify-between px-2 mb-3">
-                  <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+               <div className="flex items-center justify-between px-2 mb-2">
+                  <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500">
                       Sources
                   </h3>
                   <div className="flex items-center gap-0.5 -mr-1">
@@ -297,9 +297,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
           </div>
 
           {/* Section: Tags */}
-          <div className="mt-6">
-              <div className="flex items-center justify-between px-2 mb-3">
-                  <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+          <div>
+              <div className="flex items-center justify-between px-2 mb-2">
+                  <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500">
                       Tags
                   </h3>
                   <div className="flex items-center gap-0.5 -mr-1">
@@ -318,11 +318,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
                           key={tag.id}
                           onClick={() => onSelect(`tag-${tag.id}`)}
                           className={`
-                               group relative flex items-center gap-2 py-1.5 px-2 rounded-lg text-sm cursor-pointer transition-all duration-200
+                               group relative flex items-center gap-2 py-1.5 pl-3 pr-2 rounded-lg text-sm cursor-pointer transition-all duration-200
                               ${activeId === `tag-${tag.id}` ? 'bg-black/5 dark:bg-white/10 text-slate-800 dark:text-white font-medium shadow-sm backdrop-blur-sm' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-gray-200'}
                           `}
                       >
-                          <div className={`w-3 h-3 rounded-full ${tag.color} shadow-sm`} />
+                          <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
+                              <div className={`w-3 h-3 rounded-full ${tag.color} shadow-sm`} />
+                          </div>
                           <span className="truncate">{tag.name}</span>
                       </div>
                   ))}
@@ -331,7 +333,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
         </div>
 
         {/* Footer: User Settings */}
-        <div className="p-4 border-t border-black/5 dark:border-white/5 bg-slate-100 dark:bg-[#0A0A0A] transition-colors duration-300">
+        <div className="p-3 border-t border-black/5 dark:border-white/5 bg-white/40 dark:bg-black/20 transition-colors duration-300">
           <UserSettings />
         </div>
       </div>

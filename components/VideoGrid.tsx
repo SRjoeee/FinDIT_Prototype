@@ -23,7 +23,7 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, selectedIds, asset
   if (videos.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center text-slate-400 dark:text-gray-500 h-full">
-        <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center mb-4 border border-black/5 dark:border-white/5">
+        <div className="w-16 h-16 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-center mb-4 border border-black/5 dark:border-white/5">
             <FileType className="w-8 h-8 opacity-40" />
         </div>
         <p className="text-sm font-medium text-slate-500 dark:text-gray-400">No media found</p>
@@ -50,7 +50,7 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, selectedIds, asset
                 onNativeOpen(video); 
             }}
             className={`
-                group relative flex flex-col gap-2 cursor-pointer p-2 -m-2 rounded-xl transition-all
+                group relative flex flex-col gap-2 cursor-pointer p-2 -m-2 rounded-lg transition-all
                 ${selectedIds.has(video.id) ? 'bg-blue-500/20 ring-1 ring-blue-500/50' : 'hover:bg-black/5 dark:hover:bg-white/5'}
             `}
           >

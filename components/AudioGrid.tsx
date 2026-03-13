@@ -29,7 +29,7 @@ export const AudioGrid: React.FC<AudioGridProps> = ({ audios, selectedIds, asset
                 onNativeOpen(audio); 
             }}
             className={`
-              group relative flex items-center gap-5 border rounded-2xl p-4 transition-all duration-200 cursor-pointer
+              group relative flex items-center gap-5 border rounded-xl p-4 transition-all duration-200 cursor-pointer
               ${selectedIds.has(audio.id) ? 'bg-blue-500/20 border-blue-500/50 ring-1 ring-blue-500/50' : 'bg-white dark:bg-[#111] border-black/5 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-[#1A1A1A] hover:border-black/10 dark:hover:border-white/10'}
             `}
           >

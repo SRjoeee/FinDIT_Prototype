@@ -2,6 +2,8 @@
 
 @layer base {
   body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'SF Pro Text', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
     @apply transition-colors duration-300;
   }
 }
@@ -20,7 +22,3 @@
   @apply bg-black/10 dark:bg-white/10 rounded-full hover:bg-black/20 dark:hover:bg-white/20 transition-colors;
 }
 
-/* Smooth transitions for theme changes */
-* {
-  @apply transition-colors duration-200;
-}
