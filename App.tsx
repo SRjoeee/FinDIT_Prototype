@@ -3,16 +3,31 @@ import { Sidebar } from './components/Sidebar';
 import { SearchBar } from './components/SearchBar';
 import { VideoGrid } from './components/VideoGrid';
 import { AudioGrid } from './components/AudioGrid';
-import { MOCK_DIRECTORIES, MOCK_VIDEOS, MOCK_AUDIO_DIRECTORIES, MOCK_AUDIOS } from './constants';
-import { Directory } from './types';
+import { MOCK_DIRECTORIES, MOCK_VIDEOS, MOCK_AUDIO_DIRECTORIES, MOCK_AUDIOS, TAG_COLORS } from './constants';
+import { Directory, VideoAsset, AudioAsset } from './types';
 import { SlidersHorizontal, Settings, UploadCloud, AlertTriangle } from 'lucide-react';
 import { WindowControls } from './components/WindowControls';
+import { VideoPlayerModal } from './components/VideoPlayerModal';
+import { AudioPlayerModal } from './components/AudioPlayerModal';
 
 const App: React.FC = () => {
   const [searchMode, setSearchMode] = useState<'video' | 'audio'>('video');
   const [activeFolderId, setActiveFolderId] = useState<string | null>('smart-1');
   const [searchQuery, setSearchQuery] = useState('');
   
+  const [selectedVideo, setSelectedVideo] = useState<VideoAsset | null>(null);
+  const [selectedAudio, setSelectedAudio] = useState<AudioAsset | null>(null);
+  
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [assetTags, setAssetTags] = useState<Record<string, string[]>>({});
+  const [starredIds, setStarredIds] = useState<Set<string>>(new Set());
+  const [toast, setToast] = useState<string | null>(null);
+  
+  const showToast = (msg: string) => {
+      setToast(msg);
+      setTimeout(() => setToast(null), 3000);
+  };
+
   // Manage directories based on mode
   const [videoDirectories, setVideoDirectories] = useState<Directory[]>(MOCK_DIRECTORIES);
   const [audioDirectories, setAudioDirectories] = useState<Directory[]>(MOCK_AUDIO_DIRECTORIES);
@@ -26,35 +41,114 @@ const App: React.FC = () => {
       setSearchQuery('');
   };
 
+  const handleSelectAsset = (e: React.MouseEvent, id: string) => {
+      if (e.metaKey || e.ctrlKey) {
+          setSelectedIds(prev => {
+              const next = new Set(prev);
+              if (next.has(id)) next.delete(id);
+              else next.add(id);
+              return next;
+          });
+      } else {
+          setSelectedIds(new Set([id]));
+      }
+  };
+
+  const handleToggleStar = (e: React.MouseEvent, id: string) => {
+      e.stopPropagation();
+      setStarredIds(prev => {
+          const next = new Set(prev);
+          if (next.has(id)) next.delete(id);
+          else next.add(id);
+          return next;
+      });
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+          if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+          if (selectedIds.size === 0) return;
+
+          const keyMap: Record<string, string> = {
+              '1': 'red', '2': 'orange', '3': 'yellow', '4': 'green',
+              '5': 'blue', '6': 'purple', '7': 'gray'
+          };
+
+          const tagOrder = ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'gray'];
+
+          if (keyMap[e.key]) {
+              e.preventDefault();
+              const tag = keyMap[e.key];
+              setAssetTags(prev => {
+                  const next = { ...prev };
+                  selectedIds.forEach(id => {
+                      const tags = next[id] || [];
+                      if (tags.includes(tag)) {
+                          next[id] = tags.filter(t => t !== tag);
+                      } else {
+                          next[id] = [...tags, tag].sort((a, b) => tagOrder.indexOf(a) - tagOrder.indexOf(b));
+                      }
+                  });
+                  return next;
+              });
+          } else if (e.key === '`' || e.key === '~' || e.code === 'Backquote') {
+              e.preventDefault();
+              setStarredIds(prev => {
+                  const next = new Set(prev);
+                  let allStarred = true;
+                  selectedIds.forEach(id => { if (!next.has(id)) allStarred = false; });
+                  
+                  selectedIds.forEach(id => {
+                      if (allStarred) next.delete(id);
+                      else next.add(id);
+                  });
+                  return next;
+              });
+          } else if (e.key === '0') {
+              e.preventDefault();
+              setAssetTags(prev => {
+                  const next = { ...prev };
+                  selectedIds.forEach(id => { delete next[id]; });
+                  return next;
+              });
+          } else if (e.code === 'Space') {
+              e.preventDefault();
+              if (selectedIds.size === 1) {
+                  const id = Array.from(selectedIds)[0];
+                  if (searchMode === 'video') {
+                      const video = MOCK_VIDEOS.find(v => v.id === id);
+                      if (video) setSelectedVideo(video);
+                  } else {
+                      const audio = MOCK_AUDIOS.find(a => a.id === id);
+                      if (audio) setSelectedAudio(audio);
+                  }
+              }
+          }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedIds, searchMode]);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
-  // Logic to determine if we are currently viewing an offline source
-  const isOfflineView = useMemo(() => {
-    if (!activeFolderId || activeFolderId.startsWith('smart')) return false;
-    
-    // Find the folder or its parent drive
-    const findDir = (dirs: Directory[]): Directory | undefined => {
+  const connectedFolderIds = useMemo(() => {
+    const ids = new Set<string>();
+    const traverse = (dirs: Directory[], parentConnected: boolean) => {
         for (const d of dirs) {
-            if (d.id === activeFolderId) return d;
+            const isConnected = parentConnected && d.isConnected;
+            if (isConnected) {
+                ids.add(d.id);
+            }
             if (d.children) {
-                const found = findDir(d.children);
-                if (found) return found;
+                traverse(d.children, isConnected);
             }
         }
-        return undefined;
     };
-
-    const dir = findDir(directories);
-    if (!dir) return false;
-
-    // Check if the directory itself is connected, or if it belongs to a disconnected parent
-    if (!dir.isConnected) return true;
-    
-    // Check parents (simplified: finding top-level parent in mock data)
-    const topLevel = directories.find(d => d.children?.some(c => c.id === activeFolderId) || d.id === activeFolderId);
-    return topLevel ? !topLevel.isConnected : false;
-
-  }, [activeFolderId, directories]);
+    traverse(directories, true);
+    return ids;
+  }, [directories]);
 
   const handleMountDrive = () => {
     const newDrive: Directory = {
@@ -115,15 +209,18 @@ const App: React.FC = () => {
   };
 
   const filteredVideos = useMemo(() => {
-    let result = MOCK_VIDEOS;
+    let result = MOCK_VIDEOS.filter(v => connectedFolderIds.has(v.folderId));
 
     if (activeFolderId) {
        if (activeFolderId === 'smart-1') {
            // Show All
            result = result;
        } else if (activeFolderId === 'smart-2') {
-           // Recent
-           result = result.slice(0, 4);
+           // Favorites
+           result = result.filter(v => starredIds.has(v.id));
+       } else if (activeFolderId.startsWith('tag-')) {
+           const tag = activeFolderId.replace('tag-', '');
+           result = result.filter(v => assetTags[v.id]?.includes(tag));
        } else {
            // Specific Folder Logic
            // 1. Is it the folder itself?
@@ -148,18 +245,21 @@ const App: React.FC = () => {
     }
 
     return result;
-  }, [activeFolderId, searchQuery, directories]);
+  }, [activeFolderId, searchQuery, directories, connectedFolderIds, starredIds, assetTags]);
 
   const filteredAudios = useMemo(() => {
-    let result = MOCK_AUDIOS;
+    let result = MOCK_AUDIOS.filter(a => connectedFolderIds.has(a.folderId));
 
     if (activeFolderId) {
        if (activeFolderId === 'smart-audio-1') {
            // Show All
            result = result;
        } else if (activeFolderId === 'smart-audio-2') {
-           // Recent
-           result = result.slice(0, 4);
+           // Favorites
+           result = result.filter(a => starredIds.has(a.id));
+       } else if (activeFolderId.startsWith('tag-')) {
+           const tag = activeFolderId.replace('tag-', '');
+           result = result.filter(a => assetTags[a.id]?.includes(tag));
        } else {
            // Specific Folder Logic
            const targetDir = directories.find(d => d.id === activeFolderId);
@@ -181,7 +281,7 @@ const App: React.FC = () => {
     }
 
     return result;
-  }, [activeFolderId, searchQuery, directories]);
+  }, [activeFolderId, searchQuery, directories, connectedFolderIds, starredIds, assetTags]);
 
   return (
     <div className="flex h-screen w-full bg-[#050505] text-white overflow-hidden font-sans selection:bg-blue-500/30 relative">
@@ -201,7 +301,7 @@ const App: React.FC = () => {
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
       />
       
-      <main className="flex-1 flex flex-col min-w-0 relative">
+      <main className="flex-1 flex flex-col min-w-0 relative" onClick={() => setSelectedIds(new Set())}>
         {/* Subtle Ambient Background for Active View */}
         <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-[#111] to-transparent pointer-events-none" />
         
@@ -212,19 +312,14 @@ const App: React.FC = () => {
                     <h1 className="text-base font-bold text-gray-100 truncate leading-none">
                         {activeFolderId?.startsWith('smart') 
                             ? directories.find(d => d.id === activeFolderId)?.name 
+                            : activeFolderId?.startsWith('tag-')
+                            ? TAG_COLORS.find(t => t.id === activeFolderId.replace('tag-', ''))?.name
                             : directories.find(d => d.id === activeFolderId || d.children?.some(c => c.id === activeFolderId))?.name || 'Library'}
                     </h1>
                     <span className="text-xs text-gray-500 font-medium truncate leading-none">
                         {searchMode === 'video' ? filteredVideos.length : filteredAudios.length} Items
                     </span>
                 </div>
-                
-                {isOfflineView && (
-                    <span className="px-2 py-0.5 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 text-[10px] font-medium uppercase tracking-wide flex items-center gap-1.5 flex-shrink-0">
-                        <AlertTriangle size={10} />
-                        Offline Mode
-                    </span>
-                )}
             </div>
             
             <div className="flex justify-center flex-shrink-0">
@@ -232,7 +327,10 @@ const App: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-end gap-4 flex-1">
-                 <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 text-gray-500 hover:text-white transition-colors">
+                 <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 text-gray-500 hover:text-white transition-colors" title="Upload Media">
+                    <UploadCloud size={16} />
+                 </button>
+                 <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 text-gray-500 hover:text-white transition-colors" title="Filter">
                     <SlidersHorizontal size={16} />
                  </button>
             </div>
@@ -241,13 +339,45 @@ const App: React.FC = () => {
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto custom-scrollbar">
             {searchMode === 'video' ? (
-                <VideoGrid videos={filteredVideos} isOfflineView={isOfflineView} />
+                <VideoGrid 
+                    videos={filteredVideos} 
+                    selectedIds={selectedIds}
+                    assetTags={assetTags}
+                    starredIds={starredIds}
+                    onSelect={handleSelectAsset}
+                    onNativeOpen={(video) => showToast(`Opening "${video.title}" in default system player...`)}
+                    onToggleStar={handleToggleStar}
+                />
             ) : (
-                <AudioGrid audios={filteredAudios} isOfflineView={isOfflineView} />
+                <AudioGrid 
+                    audios={filteredAudios} 
+                    selectedIds={selectedIds}
+                    assetTags={assetTags}
+                    starredIds={starredIds}
+                    onSelect={handleSelectAsset}
+                    onNativeOpen={(audio) => showToast(`Opening "${audio.title}" in default system player...`)}
+                    onToggleStar={handleToggleStar}
+                />
             )}
         </div>
 
+        {/* Toast Notification */}
+        {toast && (
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[#1A1A1A]/90 backdrop-blur-md border border-white/10 text-white px-5 py-2.5 rounded-full shadow-2xl z-50 text-xs font-medium flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
+                <Play size={14} className="text-blue-400" fill="currentColor" />
+                {toast}
+            </div>
+        )}
+
       </main>
+      
+      {/* Modals */}
+      {selectedVideo && (
+        <VideoPlayerModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />
+      )}
+      {selectedAudio && (
+        <AudioPlayerModal audio={selectedAudio} onClose={() => setSelectedAudio(null)} />
+      )}
     </div>
   );
 };
