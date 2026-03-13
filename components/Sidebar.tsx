@@ -13,9 +13,11 @@ import {
   AlertCircle,
   Unplug,
   Database,
-  PanelLeft
+  PanelLeft,
+  Star
 } from 'lucide-react';
 import { Directory } from '../types';
+import { TAG_COLORS } from '../constants';
 import { WindowControls } from './WindowControls';
 import { UserSettings } from './UserSettings';
 
@@ -79,6 +81,8 @@ const DirectoryItem: React.FC<{
   const isOffline = !dir.isConnected;
 
   const getIcon = () => {
+    if (dir.id === 'smart-1' || dir.id === 'smart-audio-1') return <LayoutGrid size={15} className="text-blue-400" />;
+    if (dir.id === 'smart-2' || dir.id === 'smart-audio-2') return <Star size={15} className="text-yellow-400" />;
     if (dir.type === 'smart') return <Sparkles size={15} className="text-purple-400" />;
     if (dir.type === 'local' && depth === 0) return <Laptop size={15} className="text-gray-400" />;
     
@@ -199,6 +203,8 @@ const DirectoryItem: React.FC<{
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen, searchMode, onSearchModeChange, onSelect, onMountDrive, onToggleConnection, onToggleSidebar }) => {
+  const [isSourcesExpanded, setIsSourcesExpanded] = useState(true);
+  const [isTagsExpanded, setIsTagsExpanded] = useState(true);
   const smartDirs = directories.filter(d => d.type === 'smart');
   const storageDirs = directories.filter(d => d.type !== 'smart' && d.isConnected);
 
@@ -258,16 +264,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
                   <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                       Sources
                   </h3>
-                  <button 
-                      onClick={onMountDrive}
-                      className="p-1 -mr-1 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors"
-                      title="Add Location"
-                  >
-                      <Plus size={14} />
-                  </button>
+                  <div className="flex items-center gap-0.5 -mr-1">
+                      <button 
+                          onClick={onMountDrive}
+                          className="p-1 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors"
+                          title="Add Location"
+                      >
+                          <Plus size={14} />
+                      </button>
+                      <button 
+                          onClick={() => setIsSourcesExpanded(!isSourcesExpanded)}
+                          className="p-1 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors"
+                          title={isSourcesExpanded ? "Collapse Sources" : "Expand Sources"}
+                      >
+                          <ChevronDown size={14} className={`transform transition-transform duration-200 ${isSourcesExpanded ? '' : '-rotate-90'}`} />
+                      </button>
+                  </div>
               </div>
               
-              <div className="space-y-0.5">
+              <div className={`space-y-0.5 overflow-hidden transition-all duration-300 ${isSourcesExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                   {storageDirs.map(dir => (
                       <DirectoryItem 
                           key={dir.id} 
@@ -276,6 +291,39 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
                           onSelect={onSelect} 
                           onToggleConnection={onToggleConnection}
                       />
+                  ))}
+              </div>
+          </div>
+
+          {/* Section: Tags */}
+          <div className="mt-6">
+              <div className="flex items-center justify-between px-2 mb-3">
+                  <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                      Tags
+                  </h3>
+                  <div className="flex items-center gap-0.5 -mr-1">
+                      <button 
+                          onClick={() => setIsTagsExpanded(!isTagsExpanded)}
+                          className="p-1 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors"
+                          title={isTagsExpanded ? "Collapse Tags" : "Expand Tags"}
+                      >
+                          <ChevronDown size={14} className={`transform transition-transform duration-200 ${isTagsExpanded ? '' : '-rotate-90'}`} />
+                      </button>
+                  </div>
+              </div>
+              <div className={`space-y-0.5 overflow-hidden transition-all duration-300 ${isTagsExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                  {TAG_COLORS.map(tag => (
+                      <div
+                          key={tag.id}
+                          onClick={() => onSelect(`tag-${tag.id}`)}
+                          className={`
+                              group relative flex items-center gap-2 py-1.5 px-2 rounded-lg text-sm cursor-pointer transition-all duration-200
+                              ${activeId === `tag-${tag.id}` ? 'bg-white/10 text-white font-medium shadow-sm backdrop-blur-sm' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'}
+                          `}
+                      >
+                          <div className={`w-3 h-3 rounded-full ${tag.color} shadow-sm`} />
+                          <span className="truncate">{tag.name}</span>
+                      </div>
                   ))}
               </div>
           </div>

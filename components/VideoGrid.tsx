@@ -1,25 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Play, Clock, FileType, CloudOff, Loader2, FolderOpen, Star } from 'lucide-react';
 import { VideoAsset } from '../types';
+import { TAG_COLORS } from '../constants';
 
 interface VideoGridProps {
   videos: VideoAsset[];
-  isOfflineView?: boolean;
+  selectedIds: Set<string>;
+  assetTags: Record<string, string[]>;
+  starredIds: Set<string>;
+  onSelect: (e: React.MouseEvent, id: string) => void;
+  onNativeOpen: (video: VideoAsset) => void;
+  onToggleStar: (e: React.MouseEvent, id: string) => void;
 }
 
-export const VideoGrid: React.FC<VideoGridProps> = ({ videos, isOfflineView = false }) => {
-  const [starredIds, setStarredIds] = useState<Set<string>>(new Set());
-
-  const toggleStar = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    setStarredIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
+export const VideoGrid: React.FC<VideoGridProps> = ({ videos, selectedIds, assetTags, starredIds, onSelect, onNativeOpen, onToggleStar }) => {
   const openInFinder = (e: React.MouseEvent) => {
     e.stopPropagation();
     // Simulate opening in Finder
@@ -47,9 +41,17 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, isOfflineView = fa
         return (
           <div 
             key={video.id} 
+            onClick={(e) => { e.stopPropagation(); onSelect(e, video.id); }}
+            onDoubleClick={(e) => { 
+                e.stopPropagation(); 
+                // TODO: In a native wrapper (Electron/Tauri), replace with:
+                // import { shell } from 'electron';
+                // shell.openPath(video.filePath);
+                onNativeOpen(video); 
+            }}
             className={`
-                group relative flex flex-col gap-2 cursor-pointer
-                ${isOfflineView ? 'opacity-60 grayscale-[0.8]' : ''}
+                group relative flex flex-col gap-2 cursor-pointer p-2 -m-2 rounded-xl transition-all
+                ${selectedIds.has(video.id) ? 'bg-blue-500/20 ring-1 ring-blue-500/50' : 'hover:bg-white/5'}
             `}
           >
             {/* Thumbnail Container */}
@@ -72,15 +74,8 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, isOfflineView = fa
                   </div>
               )}
 
-              {/* Offline Overlay */}
-              {isOfflineView && !isProcessing && (
-                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
-                     <CloudOff size={24} className="text-white/50" />
-                 </div>
-              )}
-
-              {/* Hover Play Button (Only if Online) */}
-              {!isOfflineView && !isProcessing && (
+              {/* Hover Play Button */}
+              {!isProcessing && (
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/20">
                     <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
                         <Play size={14} fill="white" className="text-white ml-0.5" />
@@ -93,32 +88,47 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, isOfflineView = fa
                 {video.duration}
               </div>
 
+              {/* Bottom Left: Tags */}
+              {assetTags[video.id] && assetTags[video.id].length > 0 && (
+                  <div className="absolute bottom-1.5 left-1.5 flex -space-x-1.5 drop-shadow-md">
+                      {assetTags[video.id].map(tagId => {
+                          const tagColor = TAG_COLORS.find(t => t.id === tagId)?.color;
+                          return (
+                            <div 
+                                key={tagId} 
+                                className={`w-2.5 h-2.5 rounded-full ${tagColor} ring-1 ring-black/40 shadow-sm`} 
+                            />
+                          );
+                      })}
+                  </div>
+              )}
+
               {/* Top Left: Star Icon */}
               <button 
-                onClick={(e) => toggleStar(e, video.id)}
-                className={`absolute top-2 left-2 z-10 p-1.5 rounded-md backdrop-blur-md border transition-all duration-200 ${
+                onClick={(e) => onToggleStar(e, video.id)}
+                className={`absolute top-1.5 left-1.5 z-10 p-1 transition-all duration-200 drop-shadow-md hover:scale-110 ${
                   starredIds.has(video.id) 
-                    ? 'bg-yellow-500/20 border-yellow-500/50 text-yellow-400 opacity-100' 
-                    : 'bg-black/40 border-white/10 text-white opacity-0 group-hover:opacity-100 hover:bg-white/20'
+                    ? 'text-yellow-400 opacity-100' 
+                    : 'text-white/80 opacity-0 group-hover:opacity-100 hover:text-white'
                 }`}
                 title={starredIds.has(video.id) ? "Unstar" : "Star"}
               >
-                <Star size={14} className={starredIds.has(video.id) ? "fill-yellow-400" : ""} />
+                <Star size={16} className={starredIds.has(video.id) ? "fill-yellow-400" : ""} />
               </button>
 
               {/* Top Right: Finder Icon */}
               <button 
                 onClick={openInFinder}
-                className="absolute top-2 right-2 z-10 p-1.5 rounded-md bg-black/40 backdrop-blur-md border border-white/10 text-white opacity-0 group-hover:opacity-100 hover:bg-white/20 transition-all duration-200"
+                className="absolute top-1.5 right-1.5 z-10 p-1 text-white/80 opacity-0 group-hover:opacity-100 hover:text-white hover:scale-110 transition-all duration-200 drop-shadow-md"
                 title="Reveal in Finder"
               >
-                <FolderOpen size={14} />
+                <FolderOpen size={16} />
               </button>
             </div>
 
             {/* Metadata */}
-            <div className="flex flex-col px-0.5 gap-0.5">
-              <h4 className={`text-xs font-medium truncate transition-colors ${isOfflineView ? 'text-gray-500' : 'text-gray-300 group-hover:text-white'}`}>
+            <div className="flex flex-col px-0.5 gap-1 mt-1">
+              <h4 className={`text-xs font-medium truncate transition-colors ${selectedIds.has(video.id) ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
                   {video.title}
               </h4>
               <div className="flex items-center justify-between text-[10px] text-gray-600">

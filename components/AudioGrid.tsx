@@ -1,23 +1,36 @@
 import React from 'react';
 import { AudioAsset } from '../types';
-import { Play, MoreVertical, Music, Clock, FileAudio, Activity } from 'lucide-react';
+import { Play, MoreVertical, Music, Clock, FileAudio, Activity, Star } from 'lucide-react';
+import { TAG_COLORS } from '../constants';
 
 interface AudioGridProps {
   audios: AudioAsset[];
-  isOfflineView: boolean;
+  selectedIds: Set<string>;
+  assetTags: Record<string, string[]>;
+  starredIds: Set<string>;
+  onSelect: (e: React.MouseEvent, id: string) => void;
+  onNativeOpen: (audio: AudioAsset) => void;
+  onToggleStar: (e: React.MouseEvent, id: string) => void;
 }
 
-export const AudioGrid: React.FC<AudioGridProps> = ({ audios, isOfflineView }) => {
+export const AudioGrid: React.FC<AudioGridProps> = ({ audios, selectedIds, assetTags, starredIds, onSelect, onNativeOpen, onToggleStar }) => {
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <div className="flex flex-col gap-3">
         {audios.map(audio => (
           <div 
             key={audio.id} 
+            onClick={(e) => { e.stopPropagation(); onSelect(e, audio.id); }}
+            onDoubleClick={(e) => { 
+                e.stopPropagation(); 
+                // TODO: In a native wrapper (Electron/Tauri), replace with:
+                // import { shell } from 'electron';
+                // shell.openPath(audio.filePath);
+                onNativeOpen(audio); 
+            }}
             className={`
-              group relative flex items-center gap-5 bg-[#111] border border-white/5 rounded-2xl p-4
-              hover:bg-[#1A1A1A] hover:border-white/10 transition-all duration-200
-              ${isOfflineView ? 'opacity-50 grayscale' : ''}
+              group relative flex items-center gap-5 border rounded-2xl p-4 transition-all duration-200 cursor-pointer
+              ${selectedIds.has(audio.id) ? 'bg-blue-500/20 border-blue-500/50 ring-1 ring-blue-500/50' : 'bg-[#111] border-white/5 hover:bg-[#1A1A1A] hover:border-white/10'}
             `}
           >
             {/* Play Button */}
@@ -77,9 +90,34 @@ export const AudioGrid: React.FC<AudioGridProps> = ({ audios, isOfflineView }) =
             </div>
 
             {/* Actions */}
-            <button className="p-2 ml-2 text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                <MoreVertical size={16} />
-            </button>
+            <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                {assetTags[audio.id] && assetTags[audio.id].length > 0 && (
+                    <div className="flex -space-x-2 mr-3">
+                        {assetTags[audio.id].map(tagId => {
+                            const tagColor = TAG_COLORS.find(t => t.id === tagId)?.color;
+                            return (
+                                <div 
+                                    key={tagId} 
+                                    className={`w-3 h-3 rounded-full ${tagColor} ring-2 ring-[#111] group-hover:ring-[#1A1A1A] shadow-sm transition-all`} 
+                                />
+                            );
+                        })}
+                    </div>
+                )}
+                <button 
+                    onClick={(e) => onToggleStar(e, audio.id)}
+                    className={`p-1.5 transition-all duration-200 hover:scale-110 ${
+                        starredIds.has(audio.id) 
+                            ? 'text-yellow-400 opacity-100' 
+                            : 'text-gray-500 opacity-0 group-hover:opacity-100 hover:text-white'
+                    }`}
+                >
+                    <Star size={16} className={starredIds.has(audio.id) ? "fill-yellow-400" : ""} />
+                </button>
+                <button className="p-1.5 text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <MoreVertical size={16} />
+                </button>
+            </div>
           </div>
         ))}
       </div>

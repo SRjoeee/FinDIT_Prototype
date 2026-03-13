@@ -1,5 +1,15 @@
 import { Directory, VideoAsset } from './types';
 
+export const TAG_COLORS = [
+  { id: 'red', name: 'Red', color: 'bg-red-500' },
+  { id: 'orange', name: 'Orange', color: 'bg-orange-500' },
+  { id: 'yellow', name: 'Yellow', color: 'bg-yellow-500' },
+  { id: 'green', name: 'Green', color: 'bg-green-500' },
+  { id: 'blue', name: 'Blue', color: 'bg-blue-500' },
+  { id: 'purple', name: 'Purple', color: 'bg-purple-500' },
+  { id: 'gray', name: 'Gray', color: 'bg-gray-500' },
+];
+
 export const MOCK_DIRECTORIES: Directory[] = [
   {
     id: 'smart-1',
@@ -12,9 +22,9 @@ export const MOCK_DIRECTORIES: Directory[] = [
   },
   {
     id: 'smart-2',
-    name: 'Recently Added',
+    name: 'Favorites',
     type: 'smart',
-    path: 'smart://recent',
+    path: 'smart://favorites',
     status: 'idle',
     isConnected: true,
     itemCount: 12
@@ -77,9 +87,9 @@ export const MOCK_AUDIO_DIRECTORIES: Directory[] = [
   },
   {
     id: 'smart-audio-2',
-    name: 'Recently Added',
+    name: 'Favorites',
     type: 'smart',
-    path: 'smart://recent',
+    path: 'smart://favorites',
     status: 'idle',
     isConnected: true,
     itemCount: 5
