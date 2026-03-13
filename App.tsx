@@ -5,7 +5,7 @@ import { VideoGrid } from './components/VideoGrid';
 import { AudioGrid } from './components/AudioGrid';
 import { MOCK_DIRECTORIES, MOCK_VIDEOS, MOCK_AUDIO_DIRECTORIES, MOCK_AUDIOS, TAG_COLORS } from './constants';
 import { Directory, VideoAsset, AudioAsset } from './types';
-import { SlidersHorizontal, Settings, UploadCloud, AlertTriangle, PanelLeft, Play } from 'lucide-react';
+import { PanelLeft, Play, ListFilter, Info, MoreHorizontal } from 'lucide-react';
 import { WindowControls } from './components/WindowControls';
 import { VideoPlayerModal } from './components/VideoPlayerModal';
 import { AudioPlayerModal } from './components/AudioPlayerModal';
@@ -353,12 +353,15 @@ const App: React.FC = () => {
                  <SearchBar value={searchQuery} onChange={setSearchQuery} />
             </div>
 
-            <div className="flex items-center justify-end gap-4 flex-1">
-                 <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 text-gray-500 hover:text-white transition-colors" title="Upload Media">
-                    <UploadCloud size={16} />
+            <div className="flex items-center justify-end gap-1.5 flex-1">
+                 <button className="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-white hover:bg-white/10 transition-colors" title="Filter">
+                    <ListFilter size={16} />
                  </button>
-                 <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 text-gray-500 hover:text-white transition-colors" title="Filter">
-                    <SlidersHorizontal size={16} />
+                 <button className="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-white hover:bg-white/10 transition-colors" title="More">
+                    <MoreHorizontal size={16} />
+                 </button>
+                 <button className="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-white hover:bg-white/10 transition-colors" title="Info">
+                    <Info size={16} />
                  </button>
             </div>
         </header>
