@@ -212,40 +212,43 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
   const totalItems = directories.reduce((acc, curr) => acc + (curr.itemCount || 0) + (curr.children?.reduce((c, child) => c + (child.itemCount || 0), 0) || 0), 0);
 
   return (
-    <div className={`relative h-full transition-all duration-300 ease-in-out flex-shrink-0 ${isOpen ? 'w-[260px]' : 'w-0'}`}>
+    <div className={`relative z-20 h-full transition-all duration-300 ease-in-out flex-shrink-0 ${isOpen ? 'w-[260px]' : 'w-0'}`}>
       
       {/* Sidebar Content - Slides in/out */}
       <div className={`absolute top-0 left-0 h-full w-[260px] flex flex-col bg-white/60 dark:bg-black/40 backdrop-blur-xl border-r border-black/5 dark:border-white/5 select-none transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         
         <div className="h-12 flex-shrink-0" /> {/* Spacer for window controls and absolute toggles */}
-        
-        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-5 mt-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          
+
+        {/* Segmented Control - fixed, not scrollable */}
+        <div className="flex-shrink-0 px-3 pb-3 pt-2">
+            <div className="flex items-center justify-between px-2">
+                <div className="flex bg-black/5 dark:bg-white/5 rounded-full p-0.5 w-full relative">
+                    {/* Animated Background Pill */}
+                    <div
+                        className="absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-white dark:bg-white/10 rounded-full shadow-sm transition-transform duration-300 ease-in-out"
+                        style={{ transform: searchMode === 'video' ? 'translateX(0)' : 'translateX(100%)' }}
+                    />
+
+                    <button
+                        onClick={() => onSearchModeChange('video')}
+                        className={`flex-1 py-1 text-xs font-medium rounded-full z-10 transition-colors duration-200 ${searchMode === 'video' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-300'}`}
+                    >
+                        Video
+                    </button>
+                    <button
+                        onClick={() => onSearchModeChange('audio')}
+                        className={`flex-1 py-1 text-xs font-medium rounded-full z-10 transition-colors duration-200 ${searchMode === 'audio' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-300'}`}
+                    >
+                        Audio
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div className="relative flex-1 overflow-y-auto px-3 py-2 space-y-5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
           {/* Section: Library (Smart) */}
           <div>
-              <div className="flex items-center justify-between px-2 mb-3">
-                  {/* Segmented Control for Search Mode */}
-                  <div className="flex bg-black/5 dark:bg-white/5 rounded-full p-0.5 w-full relative">
-                      {/* Animated Background Pill */}
-                      <div 
-                          className="absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-white dark:bg-white/10 rounded-full shadow-sm transition-transform duration-300 ease-in-out"
-                          style={{ transform: searchMode === 'video' ? 'translateX(0)' : 'translateX(100%)' }}
-                      />
-                      
-                      <button
-                          onClick={() => onSearchModeChange('video')}
-                          className={`flex-1 py-1 text-xs font-medium rounded-full z-10 transition-colors duration-200 ${searchMode === 'video' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-300'}`}
-                      >
-                          Video
-                      </button>
-                      <button
-                          onClick={() => onSearchModeChange('audio')}
-                          className={`flex-1 py-1 text-xs font-medium rounded-full z-10 transition-colors duration-200 ${searchMode === 'audio' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-300'}`}
-                      >
-                          Audio
-                      </button>
-                  </div>
-              </div>
               <div className="space-y-0.5">
                   {smartDirs.map(dir => (
                       <DirectoryItem 
@@ -332,8 +335,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
           </div>
         </div>
 
+        {/* Fade overlay at bottom of scroll area */}
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/60 dark:from-black/40 to-transparent z-10" />
+
         {/* Footer: User Settings */}
-        <div className="p-3 border-t border-black/5 dark:border-white/5 bg-white/40 dark:bg-black/20 transition-colors duration-300">
+        <div className="p-3">
           <UserSettings />
         </div>
       </div>

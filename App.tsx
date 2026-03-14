@@ -332,45 +332,48 @@ const App: React.FC = () => {
         {/* Subtle Ambient Background for Active View */}
         <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-slate-200/50 dark:from-[#111] to-transparent pointer-events-none transition-colors duration-300" />
         
-        {/* Header */}
-        <header className={`flex-shrink-0 px-8 h-14 flex items-center justify-between gap-4 z-10 transition-all duration-300 border-b border-black/5 dark:border-white/5 ${!isSidebarOpen ? 'pl-[160px]' : ''}`}>
-            <div className="flex items-center gap-3 flex-1 min-w-0">                
-                <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-300 min-w-0 gap-0.5">
-                    <h1 className="text-base font-semibold text-slate-900 dark:text-gray-100 truncate leading-none">
-                        {activeFolderId?.startsWith('smart') 
-                            ? directories.find(d => d.id === activeFolderId)?.name 
-                            : activeFolderId?.startsWith('tag-')
-                            ? TAG_COLORS.find(t => t.id === activeFolderId.replace('tag-', ''))?.name
-                            : directories.find(d => d.id === activeFolderId || d.children?.some(c => c.id === activeFolderId))?.name || 'Library'}
-                    </h1>
-                    <span className="text-xs text-slate-500 dark:text-gray-500 font-medium truncate leading-none">
-                        {searchMode === 'video' ? filteredVideos.length : filteredAudios.length} Items
-                    </span>
-                </div>
-            </div>
-            
-            <div className="flex justify-center flex-shrink-0">
-                 <SearchBar value={searchQuery} onChange={setSearchQuery} />
-            </div>
-
-            <div className="flex items-center justify-end gap-1.5 flex-1">
-                 <button className="w-6 h-6 flex items-center justify-center rounded-md text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="Filter">
-                    <ListFilter size={16} />
-                 </button>
-                 <button className="w-6 h-6 flex items-center justify-center rounded-md text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="More">
-                    <MoreHorizontal size={16} />
-                 </button>
-                 <button className="w-6 h-6 flex items-center justify-center rounded-md text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="Info">
-                    <Info size={16} />
-                 </button>
-            </div>
-        </header>
-
-        {/* Content Area */}
+        {/* Scrollable area: header sticks, content flows underneath */}
         <div className="flex-1 overflow-y-auto custom-scrollbar">
+            {/* Header - sticky with frosted glass + edge fade via mask */}
+            <header className={`sticky top-0 z-10 bg-white/70 dark:bg-black/50 backdrop-blur-xl [mask-image:linear-gradient(to_bottom,black_70%,transparent)] ${!isSidebarOpen ? 'pl-[160px]' : ''}`}>
+                <div className="px-8 h-14 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-300 min-w-0 gap-0.5">
+                            <h1 className="text-base font-semibold text-slate-900 dark:text-gray-100 truncate leading-none">
+                                {activeFolderId?.startsWith('smart')
+                                    ? directories.find(d => d.id === activeFolderId)?.name
+                                    : activeFolderId?.startsWith('tag-')
+                                    ? TAG_COLORS.find(t => t.id === activeFolderId.replace('tag-', ''))?.name
+                                    : directories.find(d => d.id === activeFolderId || d.children?.some(c => c.id === activeFolderId))?.name || 'Library'}
+                            </h1>
+                            <span className="text-xs text-slate-500 dark:text-gray-500 font-medium truncate leading-none">
+                                {searchMode === 'video' ? filteredVideos.length : filteredAudios.length} Items
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center flex-shrink-0">
+                         <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-1.5 flex-1">
+                         <button className="w-6 h-6 flex items-center justify-center rounded-md text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="Filter">
+                            <ListFilter size={16} />
+                         </button>
+                         <button className="w-6 h-6 flex items-center justify-center rounded-md text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="More">
+                            <MoreHorizontal size={16} />
+                         </button>
+                         <button className="w-6 h-6 flex items-center justify-center rounded-md text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="Info">
+                            <Info size={16} />
+                         </button>
+                    </div>
+                </div>
+            </header>
+
+            {/* Content */}
             {searchMode === 'video' ? (
-                <VideoGrid 
-                    videos={filteredVideos} 
+                <VideoGrid
+                    videos={filteredVideos}
                     selectedIds={selectedIds}
                     assetTags={assetTags}
                     starredIds={starredIds}
@@ -379,8 +382,8 @@ const App: React.FC = () => {
                     onToggleStar={handleToggleStar}
                 />
             ) : (
-                <AudioGrid 
-                    audios={filteredAudios} 
+                <AudioGrid
+                    audios={filteredAudios}
                     selectedIds={selectedIds}
                     assetTags={assetTags}
                     starredIds={starredIds}

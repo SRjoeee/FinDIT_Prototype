@@ -33,7 +33,7 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, selectedIds, asset
   }
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6 p-8 pb-32">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6 px-8 pt-4 pb-32">
       {videos.map((video) => {
         // Determine status visuals
         const isProcessing = video.analysisStatus === 'processing' || video.analysisStatus === 'pending';

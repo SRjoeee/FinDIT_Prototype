@@ -15,7 +15,7 @@ interface AudioGridProps {
 
 export const AudioGrid: React.FC<AudioGridProps> = ({ audios, selectedIds, assetTags, starredIds, onSelect, onNativeOpen, onToggleStar }) => {
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="px-8 pt-4 pb-8 max-w-5xl mx-auto">
       <div className="flex flex-col gap-3">
         {audios.map(audio => (
           <div 
