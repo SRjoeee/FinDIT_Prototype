@@ -55,7 +55,7 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videos, selectedIds, asset
             `}
           >
             {/* Thumbnail Container */}
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-[#1A1A1A] shadow-lg border border-black/5 dark:border-white/5 transition-all duration-300 group-hover:border-black/10 dark:group-hover:border-white/20 group-hover:shadow-xl">
+            <div className="relative aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-[#1A1A1A] border border-black/5 dark:border-white/5 transition-all duration-300 group-hover:border-black/10 dark:group-hover:border-white/20">
               <img 
                 src={video.thumbnail} 
                 alt={video.title}

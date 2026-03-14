@@ -100,7 +100,7 @@ const DirectoryItem: React.FC<{
       <div 
         className={`
           group relative flex items-center justify-between py-1.5 px-2 rounded-lg text-sm cursor-pointer transition-all duration-200
-          ${isActive ? 'bg-black/5 dark:bg-white/10 text-slate-900 dark:text-white font-medium shadow-sm backdrop-blur-sm' : 'text-slate-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-gray-200'}
+          ${isActive ? 'bg-black/5 dark:bg-white/10 text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-gray-200'}
           ${isOffline ? 'opacity-60 grayscale' : ''}
         `}
         style={{ paddingLeft: `${depth * 16 + 12}px` }}
@@ -268,14 +268,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
                   <div className="flex items-center gap-0.5 -mr-1">
                       <button 
                           onClick={onMountDrive}
-                          className="p-1 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors"
+                          className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors"
                           title="Add Location"
                       >
                           <Plus size={14} />
                       </button>
                       <button 
                           onClick={() => setIsSourcesExpanded(!isSourcesExpanded)}
-                          className="p-1 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors"
+                          className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors"
                           title={isSourcesExpanded ? "Collapse Sources" : "Expand Sources"}
                       >
                           <ChevronDown size={14} className={`transform transition-transform duration-200 ${isSourcesExpanded ? '' : '-rotate-90'}`} />
@@ -305,7 +305,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
                   <div className="flex items-center gap-0.5 -mr-1">
                       <button 
                           onClick={() => setIsTagsExpanded(!isTagsExpanded)}
-                          className="p-1 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors"
+                          className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors"
                           title={isTagsExpanded ? "Collapse Tags" : "Expand Tags"}
                       >
                           <ChevronDown size={14} className={`transform transition-transform duration-200 ${isTagsExpanded ? '' : '-rotate-90'}`} />
@@ -319,11 +319,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ directories, activeId, isOpen,
                           onClick={() => onSelect(`tag-${tag.id}`)}
                           className={`
                                group relative flex items-center gap-2 py-1.5 pl-3 pr-2 rounded-lg text-sm cursor-pointer transition-all duration-200
-                              ${activeId === `tag-${tag.id}` ? 'bg-black/5 dark:bg-white/10 text-slate-800 dark:text-white font-medium shadow-sm backdrop-blur-sm' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-gray-200'}
+                              ${activeId === `tag-${tag.id}` ? 'bg-black/5 dark:bg-white/10 text-slate-800 dark:text-white font-medium' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-gray-200'}
                           `}
                       >
                           <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
-                              <div className={`w-3 h-3 rounded-full ${tag.color} shadow-sm`} />
+                              <div className={`w-3 h-3 rounded-full ${tag.color}`} />
                           </div>
                           <span className="truncate">{tag.name}</span>
                       </div>
